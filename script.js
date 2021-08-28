@@ -22,8 +22,7 @@ function createTimeBlocks(iter) {
         eventBlock = $("<textarea>").addClass("col-8 py-3 overflow-auto").attr("id", hourText).text('');
         colorScheduleHours(eventBlock, hourText);
 
-        saveIcon = $("<span>").addClass("save2").text('💾');
-        saveBlock = $("<div>").addClass("saveBtn col-1 py-3 d-flex justify-content-center align-items-center").append(saveIcon);
+        saveBlock = $("<div>").addClass("saveBtn col-1 py-3 d-flex justify-content-center align-items-center").text('💾');
 
         hourBlock.append(timeBlock, eventBlock, saveBlock);
 
