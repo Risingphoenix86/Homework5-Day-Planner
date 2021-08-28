@@ -1,6 +1,6 @@
 var startHour = 9;
 var numHours = 9;
-var hourSuffix = ":00am";
+var hourSuffix = ":00 am";
 var storedSchedule = [];
 var storageName = "StoredSchedule"
 
@@ -13,7 +13,7 @@ function createTimeBlocks(iter) {
     
     for (var i = 0; i < iter; i++) {
         var hourText = startHour + hourSuffix;
-
+        
         hourBlock = $("<div>").addClass("row py-1");
 
         timeText = $("<h4>").addClass("text-center").text(hourText);
@@ -22,14 +22,14 @@ function createTimeBlocks(iter) {
         eventBlock = $("<textarea>").addClass("col-8 py-3 overflow-auto").attr("id", hourText).text('');
         colorScheduleHours(eventBlock, hourText);
 
-        saveBlock = $("<div>").addClass("saveBtn col-1 py-3 d-flex justify-content-center align-items-center").text('💾');
+        saveBlock = $("<div>").addClass("far fa-save saveBtn col-1 py-3 d-flex justify-content-center align-items-center");
 
         hourBlock.append(timeBlock, eventBlock, saveBlock);
 
         $(".container").append(hourBlock);
 
         if (startHour === 11) {
-            hourSuffix = ":00pm";
+            hourSuffix = ":00 pm";
             startHour++;
         } else if (startHour === 12) {
             startHour = 1;
@@ -44,13 +44,14 @@ function incHour() {
 }
 
 function colorScheduleHours(div, divTime) {
-    var thisHour = moment().format('h').split("");
-    var checkHour = divTime.split("");
-
-    if (thisHour[thisHour.length - 1] !== checkHour[checkHour.length - 1]) {
-        if (thisHour[thisHour.length - 1] > checkHour[checkHour.length - 1]) {
+    var thisHour = moment().format('HH');
+    var checkHour = moment(divTime,"h:mm a").format('HH');
+    console.log(thisHour);
+    console.log(checkHour);
+    if (thisHour !== checkHour) {
+        if (thisHour > checkHour) {
             div.addClass('past');
-        } else {
+        } else if (thisHour < checkHour) {
             div.addClass('future');
         }
     } else {
@@ -60,6 +61,10 @@ function colorScheduleHours(div, divTime) {
 
 function loadSchedule() {
     var loadedSchedule = JSON.parse(localStorage.getItem(storageName));
+    if (loadedSchedule === null) {
+        localStorage.setItem(storageName, JSON.stringify(storedSchedule))
+        return;
+    }
         loadedSchedule.forEach( applyLoaded => {
             blockId = '#' + applyLoaded.eventId;
 
@@ -73,7 +78,7 @@ function saveSchedule(event, id) {
         eventId:id,
         eventInput:event.trim()
     }
-    //console.log(savedEvent);
+    
     for (var i = 0; i < storedSchedule.length; i++) {
         if (storedSchedule[i].eventId === savedEvent.eventId) {
             storedSchedule.splice(i,1);
@@ -86,16 +91,18 @@ function saveSchedule(event, id) {
 
 displayCurrentDate();
 createTimeBlocks(9);
+// if (loadedSchedule) {
+//     localStorage.setItem(storageName, JSON.stringify(storedSchedule))
+//}
 loadSchedule();
 
 $('#time-container').on('click', '.saveBtn', function(event) {
-    event.preventDefault();
-    //console.log('clicked');
+    //event.preventDefault();
+    
     var btnClicked = $(event.target);
-    //console.log(btnClicked);
+    ;
     var eventText = btnClicked.siblings('textarea').val();
     var eventID = btnClicked.siblings('textarea').attr('id');
-    //console.log(eventText);
-    //console.log(eventID);
+    
     saveSchedule(eventText, eventID);
 });
